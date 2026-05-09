@@ -78,21 +78,29 @@ jobs:
         run: |
           scp /tmp/it-sings-to-me.tgz ubuntu@${{ secrets.SERVER_IP }}:/tmp/it-sings-to-me.tgz
 
-      - name: Deploy on server
+      - name: Write deployment env file
         env:
           BASIC_AUTH_USERS: ${{ secrets.BASIC_AUTH_USERS }}
+        run: |
+          {
+            printf '%s\n' 'TRAEFIK_HOST=workflow.withnadav.com'
+            printf '%s\n' 'TRAEFIK_DOCKER_NETWORK=traefik-public'
+            printf '%s\n' 'TRAEFIK_ENTRYPOINTS=websecure'
+            printf '%s\n' 'TRAEFIK_CERT_RESOLVER=letsencrypt'
+            printf '%s\n' "BASIC_AUTH_USERS=$BASIC_AUTH_USERS"
+          } > /tmp/it-sings-to-me.env.production
+
+      - name: Upload deployment env file
+        run: |
+          scp /tmp/it-sings-to-me.env.production ubuntu@${{ secrets.SERVER_IP }}:/tmp/it-sings-to-me.env.production
+
+      - name: Deploy on server
         run: |
           ssh ubuntu@${{ secrets.SERVER_IP }} "mkdir -p /tmp/it-sings-to-me-release"
           ssh ubuntu@${{ secrets.SERVER_IP }} "rm -rf /tmp/it-sings-to-me-release/*"
           ssh ubuntu@${{ secrets.SERVER_IP }} "tar -xzf /tmp/it-sings-to-me.tgz -C /tmp/it-sings-to-me-release"
           ssh ubuntu@${{ secrets.SERVER_IP }} "sudo mkdir -p /opt/apps/it-sings-to-me && sudo rsync -a --delete --exclude '.env.production' /tmp/it-sings-to-me-release/ /opt/apps/it-sings-to-me/ && sudo chown -R ubuntu:ubuntu /opt/apps/it-sings-to-me"
-          ssh ubuntu@${{ secrets.SERVER_IP }} "cat > /opt/apps/it-sings-to-me/.env.production <<'EOF'
-TRAEFIK_HOST=workflow.withnadav.com
-TRAEFIK_DOCKER_NETWORK=traefik-public
-TRAEFIK_ENTRYPOINTS=websecure
-TRAEFIK_CERT_RESOLVER=letsencrypt
-BASIC_AUTH_USERS=${BASIC_AUTH_USERS}
-EOF"
+          ssh ubuntu@${{ secrets.SERVER_IP }} "mv /tmp/it-sings-to-me.env.production /opt/apps/it-sings-to-me/.env.production"
           ssh ubuntu@${{ secrets.SERVER_IP }} "cd /opt/apps/it-sings-to-me && sudo docker compose --env-file .env.production -f docker-compose.prod.yml up -d --build && sudo docker image prune -f"
 
       - name: Verify deployment health
