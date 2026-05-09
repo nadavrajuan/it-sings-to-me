@@ -82,12 +82,13 @@ jobs:
         env:
           BASIC_AUTH_USERS: ${{ secrets.BASIC_AUTH_USERS }}
         run: |
+          ESCAPED_BASIC_AUTH_USERS=$(printf '%s' "$BASIC_AUTH_USERS" | sed 's/[$]/$$/g')
           {
             printf '%s\n' 'TRAEFIK_HOST=workflow.withnadav.com'
             printf '%s\n' 'TRAEFIK_DOCKER_NETWORK=traefik-public'
             printf '%s\n' 'TRAEFIK_ENTRYPOINTS=websecure'
             printf '%s\n' 'TRAEFIK_CERT_RESOLVER=letsencrypt'
-            printf '%s\n' "BASIC_AUTH_USERS=$BASIC_AUTH_USERS"
+            printf '%s\n' "BASIC_AUTH_USERS=$ESCAPED_BASIC_AUTH_USERS"
           } > /tmp/it-sings-to-me.env.production
 
       - name: Upload deployment env file
