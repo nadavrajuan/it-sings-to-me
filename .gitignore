@@ -1,0 +1,8 @@
+node_modules/
+dist/
+out/
+.cache/
+*.local
+.DS_Store
+public/assets/video/
+public/assets/audio/

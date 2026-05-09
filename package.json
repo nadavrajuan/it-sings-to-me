@@ -1,0 +1,17 @@
+{
+  "name": "looli-workflow",
+  "private": true,
+  "workspaces": [
+    "shared",
+    "remotion",
+    "interactive"
+  ],
+  "scripts": {
+    "install:all": "npm install",
+    "studio": "cd remotion && npm run studio",
+    "render:vertical": "cd remotion && npm run render:vertical",
+    "render:horizontal": "cd remotion && npm run render:horizontal",
+    "render:both": "cd remotion && npm run render:both",
+    "dev:interactive": "cd interactive && npm run dev"
+  }
+}

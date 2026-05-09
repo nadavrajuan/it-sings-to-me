@@ -1,0 +1,9 @@
+[build]
+  base    = "interactive"
+  command = "npm run build"
+  publish = "dist"
+
+[[redirects]]
+  from   = "/it-sings-to-me/*"
+  to     = "/it-sings-to-me/index.html"
+  status = 200
