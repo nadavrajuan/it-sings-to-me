@@ -1,23 +1,23 @@
 services:
   it-sings-to-me:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: it-sings-to-me:latest
+    image: nginx:1.27-alpine
     container_name: it-sings-to-me
     restart: unless-stopped
+    volumes:
+      - ./dist:/usr/share/nginx/html:ro
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
     networks:
       - traefik
     labels:
       - traefik.enable=true
       - traefik.docker.network=${TRAEFIK_DOCKER_NETWORK:-traefik-public}
-      - traefik.http.routers.it-sings-to-me.rule=Host(`${TRAEFIK_HOST:-workflow.withnadav.com}`)
+      - traefik.http.routers.it-sings-to-me.rule=Host(`${TRAEFIK_HOST:-workflow.withnadav.com}`) && PathPrefix(`/sing-to-me`)
       - traefik.http.routers.it-sings-to-me.entrypoints=${TRAEFIK_ENTRYPOINTS:-websecure}
       - traefik.http.routers.it-sings-to-me.priority=10
       - traefik.http.routers.it-sings-to-me.tls=true
       - traefik.http.routers.it-sings-to-me.tls.certresolver=${TRAEFIK_CERT_RESOLVER:-letsencrypt}
       - traefik.http.routers.it-sings-to-me.middlewares=it-sings-to-me-auth
-      - traefik.http.routers.it-sings-to-me-health.rule=Host(`${TRAEFIK_HOST:-workflow.withnadav.com}`) && Path(`/health`)
+      - traefik.http.routers.it-sings-to-me-health.rule=Host(`${TRAEFIK_HOST:-workflow.withnadav.com}`) && Path(`/sing-to-me/health`)
       - traefik.http.routers.it-sings-to-me-health.entrypoints=${TRAEFIK_ENTRYPOINTS:-websecure}
       - traefik.http.routers.it-sings-to-me-health.priority=100
       - traefik.http.routers.it-sings-to-me-health.tls=true

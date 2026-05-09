@@ -36,11 +36,25 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build interactive app
-        run: npm run build:interactive
+      - name: Build interactive app for production path
+        run: npm run build:interactive:prod
 
-      - name: Build production container
-        run: docker build -t it-sings-to-me:ci .
+      - name: Validate production compose file
+        run: docker compose --env-file .env.production.example -f docker-compose.prod.yml config
+
+      - name: Stage static deploy bundle
+        run: |
+          mkdir -p /tmp/it-sings-to-me-release
+          cp -R interactive/dist /tmp/it-sings-to-me-release/dist
+          cp docker-compose.prod.yml /tmp/it-sings-to-me-release/docker-compose.prod.yml
+          cp nginx.conf /tmp/it-sings-to-me-release/nginx.conf
+
+      - name: Upload static deploy bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: it-sings-to-me-static
+          path: /tmp/it-sings-to-me-release
+          if-no-files-found: error
 
   deploy:
     if: github.event_name == 'push'
@@ -49,21 +63,15 @@ jobs:
     permissions:
       contents: read
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Download static deploy bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: it-sings-to-me-static
+          path: /tmp/it-sings-to-me-release
 
       - name: Package release
         run: |
-          tar \
-            --exclude=.git \
-            --exclude=.github \
-            --exclude=node_modules \
-            --exclude='*/node_modules' \
-            --exclude=interactive/dist \
-            --exclude=remotion/out \
-            --exclude=public/assets/audio \
-            --exclude=public/assets/video \
-            -czf /tmp/it-sings-to-me.tgz .
+          tar -czf /tmp/it-sings-to-me.tgz -C /tmp/it-sings-to-me-release .
 
       - name: Configure SSH
         env:
@@ -102,12 +110,12 @@ jobs:
           ssh ubuntu@${{ secrets.SERVER_IP }} "tar -xzf /tmp/it-sings-to-me.tgz -C /tmp/it-sings-to-me-release"
           ssh ubuntu@${{ secrets.SERVER_IP }} "sudo mkdir -p /opt/apps/it-sings-to-me && sudo rsync -a --delete --exclude '.env.production' /tmp/it-sings-to-me-release/ /opt/apps/it-sings-to-me/ && sudo chown -R ubuntu:ubuntu /opt/apps/it-sings-to-me"
           ssh ubuntu@${{ secrets.SERVER_IP }} "mv /tmp/it-sings-to-me.env.production /opt/apps/it-sings-to-me/.env.production"
-          ssh ubuntu@${{ secrets.SERVER_IP }} "cd /opt/apps/it-sings-to-me && sudo docker compose --env-file .env.production -f docker-compose.prod.yml up -d --build && sudo docker image prune -f"
+          ssh ubuntu@${{ secrets.SERVER_IP }} "cd /opt/apps/it-sings-to-me && sudo docker compose --env-file .env.production -f docker-compose.prod.yml up -d && sudo docker image prune -f"
 
       - name: Verify deployment health
         run: |
           for i in $(seq 1 24); do
-            status=$(curl -s -o /dev/null -w "%{http_code}" https://workflow.withnadav.com/health || true)
+            status=$(curl -s -o /dev/null -w "%{http_code}" https://workflow.withnadav.com/sing-to-me/health || true)
             if [ "$status" = "200" ]; then
               echo "Deployment is healthy"
               exit 0
