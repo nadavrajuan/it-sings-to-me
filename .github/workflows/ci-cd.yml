@@ -40,7 +40,7 @@ jobs:
         run: npm run build:interactive:prod
 
       - name: Validate production compose file
-        run: docker compose --env-file .env.production.example -f docker-compose.prod.yml config
+        run: docker compose -f docker-compose.prod.yml config
 
       - name: Stage static deploy bundle
         run: |
@@ -86,31 +86,13 @@ jobs:
         run: |
           scp /tmp/it-sings-to-me.tgz ubuntu@${{ secrets.SERVER_IP }}:/tmp/it-sings-to-me.tgz
 
-      - name: Write deployment env file
-        env:
-          BASIC_AUTH_USERS: ${{ secrets.BASIC_AUTH_USERS }}
-        run: |
-          ESCAPED_BASIC_AUTH_USERS=$(printf '%s' "$BASIC_AUTH_USERS" | sed 's/[$]/$$/g')
-          {
-            printf '%s\n' 'TRAEFIK_HOST=workflow.withnadav.com'
-            printf '%s\n' 'TRAEFIK_DOCKER_NETWORK=traefik-public'
-            printf '%s\n' 'TRAEFIK_ENTRYPOINTS=websecure'
-            printf '%s\n' 'TRAEFIK_CERT_RESOLVER=letsencrypt'
-            printf '%s\n' "BASIC_AUTH_USERS=$ESCAPED_BASIC_AUTH_USERS"
-          } > /tmp/it-sings-to-me.env.production
-
-      - name: Upload deployment env file
-        run: |
-          scp /tmp/it-sings-to-me.env.production ubuntu@${{ secrets.SERVER_IP }}:/tmp/it-sings-to-me.env.production
-
       - name: Deploy on server
         run: |
           ssh ubuntu@${{ secrets.SERVER_IP }} "mkdir -p /tmp/it-sings-to-me-release"
           ssh ubuntu@${{ secrets.SERVER_IP }} "rm -rf /tmp/it-sings-to-me-release/*"
           ssh ubuntu@${{ secrets.SERVER_IP }} "tar -xzf /tmp/it-sings-to-me.tgz -C /tmp/it-sings-to-me-release"
-          ssh ubuntu@${{ secrets.SERVER_IP }} "sudo mkdir -p /opt/apps/it-sings-to-me && sudo rsync -a --delete --exclude '.env.production' /tmp/it-sings-to-me-release/ /opt/apps/it-sings-to-me/ && sudo chown -R ubuntu:ubuntu /opt/apps/it-sings-to-me"
-          ssh ubuntu@${{ secrets.SERVER_IP }} "mv /tmp/it-sings-to-me.env.production /opt/apps/it-sings-to-me/.env.production"
-          ssh ubuntu@${{ secrets.SERVER_IP }} "cd /opt/apps/it-sings-to-me && sudo docker compose --env-file .env.production -f docker-compose.prod.yml up -d && sudo docker image prune -f"
+          ssh ubuntu@${{ secrets.SERVER_IP }} "sudo mkdir -p /opt/apps/it-sings-to-me && sudo rsync -a --delete /tmp/it-sings-to-me-release/ /opt/apps/it-sings-to-me/ && sudo rm -f /opt/apps/it-sings-to-me/.env.production && sudo chown -R ubuntu:ubuntu /opt/apps/it-sings-to-me"
+          ssh ubuntu@${{ secrets.SERVER_IP }} "cd /opt/apps/it-sings-to-me && sudo docker compose -f docker-compose.prod.yml up -d && sudo docker image prune -f"
 
       - name: Verify deployment health
         run: |

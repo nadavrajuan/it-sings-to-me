@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { DotIndicator } from './components/DotIndicator';
+import { useIsMobile } from './lib/useIsMobile';
 import { Chapter01_Opening }        from './chapters/Chapter01_Opening';
 import { Chapter06_Film }           from './chapters/Chapter06_Film';
 import { ChapterFullPicture }       from './chapters/ChapterFullPicture';
@@ -37,6 +38,7 @@ const slideVariants = {
 };
 
 export default function App() {
+  const isMobile = useIsMobile();
   const [current, setCurrent] = useState(0);
   const [direction, setDirection] = useState(1);
   const isAnimating = useRef(false);
@@ -88,7 +90,7 @@ export default function App() {
   const ActiveChapter = CHAPTERS[current];
 
   return (
-    <div style={{ position: 'relative', width: '100vw', height: '100vh', overflow: 'hidden', background: '#0a1628' }}>
+    <div style={{ position: 'relative', width: '100vw', height: '100dvh', overflow: 'hidden', background: '#0a1628' }}>
       <AnimatePresence mode="wait" custom={direction}>
         <motion.div
           key={current}
@@ -104,12 +106,14 @@ export default function App() {
         </motion.div>
       </AnimatePresence>
 
-      <DotIndicator
-        total={CHAPTERS.length}
-        current={current}
-        titles={CHAPTER_TITLES}
-        onChange={navigate}
-      />
+      {!isMobile && (
+        <DotIndicator
+          total={CHAPTERS.length}
+          current={current}
+          titles={CHAPTER_TITLES}
+          onChange={navigate}
+        />
+      )}
     </div>
   );
 }

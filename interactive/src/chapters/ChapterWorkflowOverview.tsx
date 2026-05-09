@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { palette, fonts } from '@looli/shared';
+import { useIsMobile } from '../lib/useIsMobile';
 
 interface ChapterProps {
   onNavigate: (index: number) => void;
@@ -122,16 +123,18 @@ function GhostStep({ n, color }: { n: string; color: string }) {
   );
 }
 
-function IntroSection({ s }: { s: SectionDef }) {
+function IntroSection({ s, isMobile }: { s: SectionDef; isMobile: boolean }) {
   return (
     <div style={{
       width: '100%', height: '100%',
       display: 'flex', alignItems: 'center',
-      padding: 'clamp(32px, 6vh, 72px) clamp(24px, 6vw, 80px)',
-      gap: 'clamp(24px, 4vw, 60px)',
+      flexDirection: isMobile ? 'column' : 'row',
+      justifyContent: 'center',
+      padding: `clamp(20px, 5vh, 56px) clamp(18px, 5vw, 72px) calc(clamp(18px, 4vh, 32px) + env(safe-area-inset-bottom))`,
+      gap: 'clamp(20px, 4vw, 44px)',
     }}>
       {/* Left: text */}
-      <div style={{ flex: '0 0 52%', display: 'flex', flexDirection: 'column', gap: 'clamp(10px, 1.8vh, 18px)' }}>
+      <div style={{ flex: isMobile ? '0 0 auto' : '0 0 52%', display: 'flex', flexDirection: 'column', gap: 'clamp(10px, 1.8vh, 18px)', textAlign: isMobile ? 'center' : 'left' }}>
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
@@ -183,7 +186,8 @@ function IntroSection({ s }: { s: SectionDef }) {
           transition={{ delay: 0.5, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           style={{
             flex: 1,
-            maxWidth: 'clamp(180px, 36vw, 460px)',
+            width: isMobile ? 'min(100%, 360px)' : 'auto',
+            maxWidth: isMobile ? 'min(100%, 360px)' : 'clamp(180px, 36vw, 460px)',
             aspectRatio: '3/4',
             borderRadius: 12, overflow: 'hidden',
             boxShadow: `0 28px 72px rgba(0,0,0,0.8), 0 0 0 1px ${s.accent}30`,
@@ -196,12 +200,12 @@ function IntroSection({ s }: { s: SectionDef }) {
   );
 }
 
-function StandardSection({ s }: { s: SectionDef }) {
+function StandardSection({ s, isMobile }: { s: SectionDef; isMobile: boolean }) {
   return (
     <div style={{
       width: '100%', height: '100%',
       display: 'flex', flexDirection: 'column',
-      padding: 'clamp(40px, 7vh, 70px) clamp(22px, 5vw, 70px) clamp(30px, 5vh, 50px)',
+      padding: `clamp(22px, 5vh, 52px) clamp(18px, 4.5vw, 48px) calc(clamp(20px, 4vh, 34px) + env(safe-area-inset-bottom))`,
     }}>
       {s.step && <GhostStep n={s.step} color={s.accent} />}
 
@@ -224,10 +228,10 @@ function StandardSection({ s }: { s: SectionDef }) {
         style={{ height: 1, maxWidth: 'clamp(100px, 20vw, 280px)', background: `${s.accent}70`, transformOrigin: 'left', marginBottom: 'clamp(10px, 1.8vh, 18px)' }}
       />
 
-      <div style={{ display: 'flex', gap: 'clamp(14px, 2.5vw, 40px)', flex: 1, alignItems: 'flex-start', minHeight: 0 }}>
+      <div style={{ display: 'flex', flexDirection: isMobile ? 'column' : 'row', gap: 'clamp(14px, 2.5vw, 32px)', flex: 1, alignItems: isMobile ? 'stretch' : 'flex-start', minHeight: 0, justifyContent: 'center' }}>
 
         {/* Left: body text + optional lyrics */}
-        <div style={{ flex: s.visual ? '0 0 46%' : '0 0 70%', display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <div style={{ flex: s.visual ? '0 0 46%' : '0 0 70%', display: 'flex', flexDirection: 'column', gap: 8, order: isMobile && (s.visual || s.frameImage) ? 2 : 1 }}>
           {s.lines.map((line, i) => (
             <motion.p
               key={i}
@@ -286,16 +290,20 @@ function StandardSection({ s }: { s: SectionDef }) {
             transition={{ delay: 0.35, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
             style={{
               flex: 1,
-              maxWidth: s.showLyrics ? 'clamp(160px, 28vw, 400px)' : 'clamp(200px, 40vw, 520px)',
+              order: isMobile ? 1 : 2,
+              width: '100%',
+              maxWidth: isMobile ? '100%' : (s.showLyrics ? 'clamp(160px, 28vw, 400px)' : 'clamp(200px, 40vw, 520px)'),
+              margin: isMobile ? '0 auto' : 0,
               borderRadius: 10, overflow: 'hidden',
               boxShadow: `0 24px 64px rgba(0,0,0,0.8), 0 0 0 1px ${s.accent}35`,
               ...(s.frameImage && !s.visual ? { aspectRatio: '4/3' } : {}),
+              ...(s.visual && isMobile ? { aspectRatio: '4/3' } : {}),
             }}
           >
             <img
               src={s.visual ?? s.frameImage!} alt=""
               onError={(e) => ((e.target as HTMLImageElement).style.display = 'none')}
-              style={{ width: '100%', height: '100%', objectFit: s.visual ? 'initial' : 'cover', display: 'block' }}
+              style={{ width: '100%', height: '100%', objectFit: s.visual ? (isMobile ? 'contain' : 'initial') : 'cover', display: 'block', background: s.visual ? 'rgba(10,22,40,0.35)' : 'transparent' }}
             />
           </motion.div>
         )}
@@ -304,7 +312,7 @@ function StandardSection({ s }: { s: SectionDef }) {
   );
 }
 
-function JarSection({ s }: { s: SectionDef }) {
+function JarSection({ s, isMobile }: { s: SectionDef; isMobile: boolean }) {
   return (
     <div style={{
       width: '100%', height: '100%',
@@ -315,7 +323,7 @@ function JarSection({ s }: { s: SectionDef }) {
         initial={{ opacity: 0, y: -8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1, duration: 0.6 }}
-        style={{ padding: 'clamp(18px, 3vh, 32px) clamp(18px, 4vw, 44px) clamp(8px, 1.2vh, 16px)', flexShrink: 0 }}
+        style={{ padding: 'clamp(18px, 3vh, 32px) clamp(18px, 4vw, 44px) clamp(8px, 1.2vh, 16px)', flexShrink: 0, textAlign: isMobile ? 'center' : 'left' }}
       >
         <div style={{ fontFamily: fonts.mono, fontSize: 10, color: s.accent, letterSpacing: '0.2em', textTransform: 'uppercase', marginBottom: 4 }}>
           step {s.step}
@@ -403,7 +411,7 @@ const ALL_IMAGES = [
   '/assets/images/mj-06-cosmic-face.png',
 ];
 
-function TaglineSection({ s }: { s: SectionDef }) {
+function TaglineSection({ s, isMobile }: { s: SectionDef; isMobile: boolean }) {
   return (
     <div style={{
       width: '100%', height: '100%',
@@ -417,7 +425,7 @@ function TaglineSection({ s }: { s: SectionDef }) {
         initial={{ opacity: 0, y: -12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1, duration: 0.6 }}
-        style={{ display: 'flex', gap: 6, width: '100%', maxWidth: 720, flexShrink: 0 }}
+        style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(3, minmax(0, 1fr))' : 'repeat(6, minmax(0, 1fr))', gap: 6, width: '100%', maxWidth: 920, flexShrink: 0 }}
       >
         {ALL_IMAGES.map((src, i) => (
           <div key={i} style={{ flex: 1, aspectRatio: '1', borderRadius: 6, overflow: 'hidden', border: `1px solid ${palette.teal}30` }}>
@@ -502,6 +510,7 @@ function TaglineSection({ s }: { s: SectionDef }) {
 // ─── Main component ───────────────────────────────────────────────────────────
 
 export function ChapterWorkflowOverview({ onNavigate, currentIndex }: ChapterProps) {
+  const isMobile = useIsMobile();
   const [idx, setIdx] = useState(0);
   const [dir, setDir] = useState(1);
   const idxRef = useRef(idx);
@@ -585,7 +594,7 @@ export function ChapterWorkflowOverview({ onNavigate, currentIndex }: ChapterPro
       }} />
 
       {/* Step progress pills */}
-      <div style={{ position: 'absolute', top: 'clamp(12px, 2vh, 22px)', left: 0, right: 0, display: 'flex', justifyContent: 'center', gap: 7, zIndex: 20 }}>
+      <div style={{ position: 'absolute', top: 'clamp(12px, 2vh, 22px)', left: 0, right: 0, display: 'flex', justifyContent: 'center', gap: 7, zIndex: 20, paddingInline: 16 }}>
         {SECTIONS.map((_, i) => (
           <motion.div
             key={i}
@@ -597,7 +606,7 @@ export function ChapterWorkflowOverview({ onNavigate, currentIndex }: ChapterPro
       </div>
 
       {/* Nav hint */}
-      <div style={{ position: 'absolute', bottom: 'clamp(8px, 1.5vh, 16px)', left: 0, right: 0, textAlign: 'center', zIndex: 20 }}>
+      <div style={{ position: 'absolute', bottom: `calc(clamp(8px, 1.5vh, 16px) + env(safe-area-inset-bottom))`, left: 0, right: 0, textAlign: 'center', zIndex: 20, display: isMobile ? 'none' : 'block' }}>
         <span style={{ fontFamily: fonts.mono, fontSize: 9, color: `${palette.cream}35`, letterSpacing: '0.12em', textTransform: 'uppercase' }}>
           ↑↓  {idx + 1} / {SECTIONS.length}
         </span>
@@ -614,10 +623,10 @@ export function ChapterWorkflowOverview({ onNavigate, currentIndex }: ChapterPro
           transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
           style={{ position: 'absolute', inset: 0, zIndex: 10 }}
         >
-          {section.kind === 'intro'    && <IntroSection   s={section} />}
-          {section.kind === 'standard' && <StandardSection s={section} />}
-          {section.kind === 'jar'      && <JarSection     s={section} />}
-          {section.kind === 'tagline'  && <TaglineSection  s={section} />}
+          {section.kind === 'intro'    && <IntroSection s={section} isMobile={isMobile} />}
+          {section.kind === 'standard' && <StandardSection s={section} isMobile={isMobile} />}
+          {section.kind === 'jar'      && <JarSection s={section} isMobile={isMobile} />}
+          {section.kind === 'tagline'  && <TaglineSection s={section} isMobile={isMobile} />}
         </motion.div>
       </AnimatePresence>
     </div>
