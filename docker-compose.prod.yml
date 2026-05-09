@@ -1,0 +1,32 @@
+services:
+  it-sings-to-me:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: it-sings-to-me:latest
+    container_name: it-sings-to-me
+    restart: unless-stopped
+    networks:
+      - traefik
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=${TRAEFIK_DOCKER_NETWORK:-traefik-public}
+      - traefik.http.routers.it-sings-to-me.rule=Host(`${TRAEFIK_HOST:-workflow.withnadav.com}`)
+      - traefik.http.routers.it-sings-to-me.entrypoints=${TRAEFIK_ENTRYPOINTS:-websecure}
+      - traefik.http.routers.it-sings-to-me.priority=10
+      - traefik.http.routers.it-sings-to-me.tls=true
+      - traefik.http.routers.it-sings-to-me.tls.certresolver=${TRAEFIK_CERT_RESOLVER:-letsencrypt}
+      - traefik.http.routers.it-sings-to-me.middlewares=it-sings-to-me-auth
+      - traefik.http.routers.it-sings-to-me-health.rule=Host(`${TRAEFIK_HOST:-workflow.withnadav.com}`) && Path(`/health`)
+      - traefik.http.routers.it-sings-to-me-health.entrypoints=${TRAEFIK_ENTRYPOINTS:-websecure}
+      - traefik.http.routers.it-sings-to-me-health.priority=100
+      - traefik.http.routers.it-sings-to-me-health.tls=true
+      - traefik.http.routers.it-sings-to-me-health.tls.certresolver=${TRAEFIK_CERT_RESOLVER:-letsencrypt}
+      - traefik.http.routers.it-sings-to-me-health.service=it-sings-to-me
+      - traefik.http.middlewares.it-sings-to-me-auth.basicauth.users=${BASIC_AUTH_USERS}
+      - traefik.http.services.it-sings-to-me.loadbalancer.server.port=80
+
+networks:
+  traefik:
+    external: true
+    name: ${TRAEFIK_DOCKER_NETWORK:-traefik-public}

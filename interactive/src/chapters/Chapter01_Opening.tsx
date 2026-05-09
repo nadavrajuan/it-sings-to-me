@@ -1,6 +1,7 @@
-import React, { useRef, useEffect } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { palette, fonts } from '@looli/shared';
+import { VIMEO_BACKGROUND_URL } from '../lib/media';
 
 interface ChapterProps {
   onNavigate: (index: number) => void;
@@ -8,32 +9,20 @@ interface ChapterProps {
 }
 
 export function Chapter01_Opening({ onNavigate }: ChapterProps) {
-  const videoRef = useRef<HTMLVideoElement>(null);
-
-  useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.playbackRate = 0.65;
-    }
-  }, []);
-
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}>
 
-      {/* Full-bleed video — muted loop, slowed */}
-      <video
-        ref={videoRef}
-        src="/assets/video/music-video-clip.mp4"
-        autoPlay
-        muted
-        loop
-        playsInline
-        tabIndex={-1}
-        style={{
-          position: 'absolute', inset: 0,
-          width: '100%', height: '100%',
-          objectFit: 'cover', zIndex: 0,
-        }}
-      />
+      {/* Full-bleed video — streamed from Vimeo so production doesn't depend on a giant local asset */}
+      <div style={{ position: 'absolute', inset: '-10%', zIndex: 0, pointerEvents: 'none' }}>
+        <iframe
+          src={VIMEO_BACKGROUND_URL}
+          width="100%"
+          height="100%"
+          frameBorder="0"
+          allow="autoplay"
+          style={{ display: 'block', width: '100%', height: '100%' }}
+        />
+      </div>
 
       {/* Vignette */}
       <div style={{

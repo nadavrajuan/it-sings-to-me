@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { palette, fonts } from '@looli/shared';
+import { VIMEO_SHARE_URL } from '../lib/media';
 
 interface ChapterProps {
   onNavigate: (index: number) => void;
@@ -15,16 +16,14 @@ const CREDITS = [
   ['Year', '2025'],
 ];
 
-const VIMEO_URL = 'https://vimeo.com/1190697407/5a08ca6045';
-
 export function Chapter07_Closing({ onNavigate }: ChapterProps) {
   const [copied, setCopied] = useState(false);
 
   const handleShare = async () => {
     if (navigator.share) {
-      await navigator.share({ title: 'It Sings To Me', url: VIMEO_URL }).catch(() => {});
+      await navigator.share({ title: 'It Sings To Me', url: VIMEO_SHARE_URL }).catch(() => {});
     } else {
-      await navigator.clipboard.writeText(VIMEO_URL).catch(() => {});
+      await navigator.clipboard.writeText(VIMEO_SHARE_URL).catch(() => {});
       setCopied(true);
       setTimeout(() => setCopied(false), 2200);
     }
@@ -184,7 +183,7 @@ export function Chapter07_Closing({ onNavigate }: ChapterProps) {
           style={{ display: 'flex', gap: 'clamp(10px, 2vw, 20px)', flexWrap: 'wrap', justifyContent: 'center' }}
         >
           <a
-            href={VIMEO_URL}
+            href={VIMEO_SHARE_URL}
             target="_blank"
             rel="noopener noreferrer"
             style={{

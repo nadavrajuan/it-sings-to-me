@@ -12,6 +12,7 @@
     "render:vertical": "cd remotion && npm run render:vertical",
     "render:horizontal": "cd remotion && npm run render:horizontal",
     "render:both": "cd remotion && npm run render:both",
-    "dev:interactive": "cd interactive && npm run dev"
+    "dev:interactive": "cd interactive && npm run dev",
+    "build:interactive": "npm --workspace @looli/interactive run build"
   }
 }

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { palette, fonts } from '@looli/shared';
+import { VIMEO_BACKGROUND_URL, VIMEO_EMBED_URL } from '../lib/media';
 
 interface ChapterProps {
   onNavigate: (index: number) => void;
@@ -8,8 +9,6 @@ interface ChapterProps {
 }
 
 const PREVIEW_DURATION = 20;
-const VIMEO_BG_URL = 'https://player.vimeo.com/video/1190697407?h=5a08ca6045&autoplay=1&loop=1&background=1&muted=1';
-const VIMEO_URL = 'https://player.vimeo.com/video/1190697407?h=5a08ca6045&autoplay=1&color=d4a574&title=0&byline=0&portrait=0#t=20s';
 
 const CREDITS = [
   ['Piano', 'Nadav Rajuan'],
@@ -46,7 +45,7 @@ function VimeoOverlay({ onClose }: { onClose: () => void }) {
         }}
       >
         <iframe
-          src={VIMEO_URL}
+          src={VIMEO_EMBED_URL}
           width="100%" height="100%"
           frameBorder="0"
           allow="autoplay; fullscreen; picture-in-picture"
@@ -84,7 +83,7 @@ export function Chapter06_Film({ onNavigate }: ChapterProps) {
       {/* Vimeo background player (muted, looping, no controls) */}
       <div style={{ position: 'absolute', inset: '-10%', zIndex: 0, pointerEvents: 'none' }}>
         <iframe
-          src={VIMEO_BG_URL}
+          src={VIMEO_BACKGROUND_URL}
           width="100%" height="100%"
           frameBorder="0"
           allow="autoplay"
