@@ -10,4 +10,4 @@ export const VIMEO_PLAYER_URL =
 
 export const CLIP_PREVIEW_VIDEO_PATH = assetPath('assets/video/sing-to-me-preview-20s.mp4');
 export const RAW_PIANO_AUDIO_PATH = assetPath('assets/audio/piano-improv-15s.mp3');
-export const VIMEO_SHARE_URL = `https://vimeo.com/${VIMEO_VIDEO_ID}/${VIMEO_VIDEO_HASH}`;
+export const VIMEO_SHARE_URL = `https://vimeo.com/${VIMEO_VIDEO_ID}`;
