@@ -1,40 +1,20 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { motion } from 'framer-motion';
 import { palette, fonts } from '@looli/shared';
-import { VIMEO_SHARE_URL } from '../lib/media';
+import { assetPath, VIMEO_SHARE_URL } from '../lib/media';
 
 interface ChapterProps {
   onNavigate: (index: number) => void;
   currentIndex: number;
 }
 
-const CREDITS = [
-  ['Piano', 'Nadav Rajuan'],
-  ['Lyrics', 'Nadav Rajuan + GPT-4'],
-  ['Visuals', 'Midjourney'],
-  ['Song', 'Suno AI'],
-  ['Year', '2025'],
-];
-
 export function Chapter07_Closing({ onNavigate }: ChapterProps) {
-  const [copied, setCopied] = useState(false);
-
-  const handleShare = async () => {
-    if (navigator.share) {
-      await navigator.share({ title: 'It Sings To Me', url: VIMEO_SHARE_URL }).catch(() => {});
-    } else {
-      await navigator.clipboard.writeText(VIMEO_SHARE_URL).catch(() => {});
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2200);
-    }
-  };
-
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}>
 
       {/* Background image */}
       <img
-        src="/assets/images/mj-03-girl-jar.png"
+        src={assetPath('assets/images/mj-03-girl-jar.png')}
         alt=""
         style={{
           position: 'absolute', inset: 0, width: '100%', height: '100%',
@@ -75,7 +55,6 @@ export function Chapter07_Closing({ onNavigate }: ChapterProps) {
           thank you for watching
         </motion.div>
 
-        {/* Title */}
         <motion.h1
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
@@ -87,7 +66,7 @@ export function Chapter07_Closing({ onNavigate }: ChapterProps) {
             textShadow: `0 4px 32px ${palette.ink}`,
           }}
         >
-          It Sings To Me
+          Watch the full video
         </motion.h1>
 
         <motion.p
@@ -95,15 +74,18 @@ export function Chapter07_Closing({ onNavigate }: ChapterProps) {
           animate={{ opacity: 1 }}
           transition={{ delay: 0.85, duration: 0.7 }}
           style={{
-            fontFamily: fonts.display,
-            fontSize: 'clamp(13px, 2vw, 18px)',
-            color: `${palette.candle}CC`,
+            fontFamily: fonts.body,
+            fontStyle: 'italic',
+            fontSize: 'clamp(14px, 2.1vw, 20px)',
+            color: `${palette.cream}D6`,
+            maxWidth: '30ch',
+            lineHeight: 1.6,
+            margin: 0,
           }}
         >
-          a song in a language that doesn't exist
+          Contact me for questions
         </motion.p>
 
-        {/* Divider */}
         <motion.div
           initial={{ scaleX: 0 }}
           animate={{ scaleX: 1 }}
@@ -114,40 +96,40 @@ export function Chapter07_Closing({ onNavigate }: ChapterProps) {
           }}
         />
 
-        {/* Credits grid */}
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.1, duration: 0.7 }}
           style={{
-            display: 'grid',
-            gridTemplateColumns: 'auto auto',
-            columnGap: 'clamp(20px, 4vw, 48px)',
-            rowGap: 'clamp(5px, 0.8vh, 10px)',
-            textAlign: 'left',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: 8,
+            alignItems: 'center',
+            textAlign: 'center',
           }}
         >
-          {CREDITS.map(([role, name]) => (
-            <React.Fragment key={role}>
-              <span style={{
-                fontFamily: fonts.mono, fontSize: 'clamp(9px, 1.2vw, 12px)',
-                color: `${palette.candle}AA`, letterSpacing: '0.12em',
-                textTransform: 'uppercase', whiteSpace: 'nowrap',
-              }}>
-                {role}
-              </span>
-              <span style={{
-                fontFamily: fonts.body, fontStyle: 'italic',
-                fontSize: 'clamp(11px, 1.5vw, 15px)',
-                color: palette.cream, whiteSpace: 'nowrap',
-              }}>
-                {name}
-              </span>
-            </React.Fragment>
-          ))}
+          <span style={{
+            fontFamily: fonts.body,
+            fontStyle: 'italic',
+            fontSize: 'clamp(18px, 2.4vw, 24px)',
+            color: palette.cream,
+          }}>
+            Nadav Rajuan
+          </span>
+          <a
+            href="mailto:nadavrajuan@gmail.com"
+            style={{
+              fontFamily: fonts.mono,
+              fontSize: 'clamp(11px, 1.6vw, 15px)',
+              color: `${palette.teal}DD`,
+              letterSpacing: '0.08em',
+              textDecoration: 'none',
+            }}
+          >
+            nadavrajuan@gmail.com
+          </a>
         </motion.div>
 
-        {/* Divider */}
         <motion.div
           initial={{ scaleX: 0 }}
           animate={{ scaleX: 1 }}
@@ -158,63 +140,30 @@ export function Chapter07_Closing({ onNavigate }: ChapterProps) {
           }}
         />
 
-        {/* Contact */}
         <motion.a
-          href="mailto:nadavrajuan@gmail.com"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.4, duration: 0.6 }}
-          style={{
-            fontFamily: fonts.mono,
-            fontSize: 'clamp(11px, 1.5vw, 14px)',
-            color: `${palette.teal}DD`,
-            letterSpacing: '0.08em',
-            textDecoration: 'none',
-          }}
-        >
-          nadavrajuan@gmail.com
-        </motion.a>
-
-        {/* Action buttons */}
-        <motion.div
+          href={VIMEO_SHARE_URL}
+          target="_blank"
+          rel="noopener noreferrer"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.6, duration: 0.6 }}
-          style={{ display: 'flex', gap: 'clamp(10px, 2vw, 20px)', flexWrap: 'wrap', justifyContent: 'center' }}
+          style={{
+            fontFamily: fonts.mono,
+            fontSize: 'clamp(10px, 1.3vw, 13px)',
+            color: palette.ink,
+            background: palette.candle,
+            border: 'none',
+            borderRadius: 20,
+            padding: 'clamp(9px, 1.2vh, 12px) clamp(18px, 2.5vw, 28px)',
+            cursor: 'pointer',
+            letterSpacing: '0.08em',
+            textTransform: 'uppercase',
+            textDecoration: 'none',
+            display: 'inline-block',
+          }}
         >
-          <a
-            href={VIMEO_SHARE_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              fontFamily: fonts.mono, fontSize: 'clamp(10px, 1.3vw, 13px)',
-              color: palette.ink, background: palette.candle,
-              border: 'none', borderRadius: 20,
-              padding: 'clamp(8px, 1.2vh, 12px) clamp(16px, 2.5vw, 28px)',
-              cursor: 'pointer', letterSpacing: '0.08em',
-              textTransform: 'uppercase', textDecoration: 'none',
-              display: 'inline-block',
-            }}
-          >
-            Watch full video clip ↗
-          </a>
-
-          <button
-            onClick={handleShare}
-            style={{
-              fontFamily: fonts.mono, fontSize: 'clamp(10px, 1.3vw, 13px)',
-              color: palette.cream,
-              background: 'none',
-              border: `1px solid ${palette.cream}50`,
-              borderRadius: 20,
-              padding: 'clamp(8px, 1.2vh, 12px) clamp(16px, 2.5vw, 28px)',
-              cursor: 'pointer', letterSpacing: '0.08em',
-              textTransform: 'uppercase',
-            }}
-          >
-            {copied ? 'Link copied ✓' : 'Share ⬡'}
-          </button>
-        </motion.div>
+          Watch the full video ↗
+        </motion.a>
       </div>
     </div>
   );

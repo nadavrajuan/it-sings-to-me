@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { palette, fonts } from '@looli/shared';
-import { CLIP_PREVIEW_VIDEO_PATH, VIMEO_PLAYER_URL } from '../lib/media';
+import { assetPath, CLIP_PREVIEW_VIDEO_PATH, VIMEO_PLAYER_URL } from '../lib/media';
 import { useIsMobile } from '../lib/useIsMobile';
 
 interface ChapterProps {
@@ -88,7 +88,7 @@ export function Chapter01_Opening({ onNavigate }: ChapterProps) {
           loop
           playsInline
           preload="metadata"
-          poster="/assets/images/mj-03-girl-jar.png"
+          poster={assetPath('assets/images/mj-03-girl-jar.png')}
           style={{
             width: '100%',
             height: '100%',

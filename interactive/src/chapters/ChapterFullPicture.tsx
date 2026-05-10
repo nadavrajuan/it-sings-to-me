@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { palette, fonts } from '@looli/shared';
+import { assetPath } from '../lib/media';
 import { useIsMobile } from '../lib/useIsMobile';
 
 interface ChapterProps {
@@ -9,12 +10,12 @@ interface ChapterProps {
 }
 
 const IMAGES = [
-  '/assets/images/mj-06-cosmic-face.png',
-  '/assets/images/mj-03-girl-jar.png',
-  '/assets/images/mj-01-cotton-stars.png',
-  '/assets/images/mj-05-marionette-dancer.png',
-  '/assets/images/mj-04-girl-doll.png',
-  '/assets/images/mj-02-galaxy.png',
+  assetPath('assets/images/mj-06-cosmic-face.png'),
+  assetPath('assets/images/mj-03-girl-jar.png'),
+  assetPath('assets/images/mj-01-cotton-stars.png'),
+  assetPath('assets/images/mj-05-marionette-dancer.png'),
+  assetPath('assets/images/mj-04-girl-doll.png'),
+  assetPath('assets/images/mj-02-galaxy.png'),
 ];
 
 const FLOW = [
@@ -29,7 +30,7 @@ export function ChapterFullPicture({ onNavigate }: ChapterProps) {
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}>
       <img
-        src="/assets/images/mj-03-girl-jar.png"
+        src={assetPath('assets/images/mj-03-girl-jar.png')}
         alt=""
         style={{
           position: 'absolute',

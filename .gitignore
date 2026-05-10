@@ -10,3 +10,4 @@ out/
 !.env.production.example
 public/assets/video/
 public/assets/audio/
+social-shots/

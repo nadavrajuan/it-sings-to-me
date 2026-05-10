@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { palette, fonts } from '@looli/shared';
-import { RAW_PIANO_AUDIO_PATH } from '../lib/media';
+import { assetPath, RAW_PIANO_AUDIO_PATH } from '../lib/media';
 import { useIsMobile } from '../lib/useIsMobile';
 
 interface ChapterProps {
@@ -12,10 +12,10 @@ interface ChapterProps {
 // ─── Section data ───────────────────────────────────────────────────────────
 
 const MOTIFS = [
-  { src: '/assets/images/mj-01-cotton-stars.png', phrase: 'Looli looli baneh doo',    label: 'Cotton Stars' },
-  { src: '/assets/images/mj-04-girl-doll.png',    phrase: 'Marru deh, marru deh',     label: 'A doll became a memory' },
-  { src: '/assets/images/mj-05-marionette-dancer.png', phrase: 'Saffa ranji tilu too', label: 'Marionette Dancer' },
-  { src: '/assets/images/mj-06-cosmic-face.png',  phrase: 'Tondaluna, shree shree sha', label: 'Cosmic Face' },
+  { src: assetPath('assets/images/mj-01-cotton-stars.png'), phrase: 'Looli looli baneh doo',    label: 'Cotton Stars' },
+  { src: assetPath('assets/images/mj-04-girl-doll.png'),    phrase: 'Marru deh, marru deh',     label: 'A doll became a memory' },
+  { src: assetPath('assets/images/mj-05-marionette-dancer.png'), phrase: 'Saffa ranji tilu too', label: 'Marionette Dancer' },
+  { src: assetPath('assets/images/mj-06-cosmic-face.png'),  phrase: 'Tondaluna, shree shree sha', label: 'Cosmic Face' },
 ];
 
 const LYRICS_LINES = [
@@ -53,9 +53,9 @@ const SECTIONS: SectionDef[] = [
       'It began with a piano improvisation.',
       'A raw emotional sketch — before words.',
     ],
-    bg: '/assets/images/mj-02-galaxy.png',
+    bg: assetPath('assets/images/mj-02-galaxy.png'),
     visual: null,
-    frameImage: '/assets/images/piano-play.png',
+    frameImage: assetPath('assets/images/piano-play.png'),
     audioSrc: RAW_PIANO_AUDIO_PATH,
     accent: palette.teal,
   },
@@ -67,8 +67,8 @@ const SECTIONS: SectionDef[] = [
       'Using ChatGPT\'s "subconscious" to invent a secret language —',
       'made from sound, instinct, and hidden associations.',
     ],
-    bg: '/assets/images/mj-01-cotton-stars.png',
-    visual: '/assets/screenshots/gpt-prompt.png',
+    bg: assetPath('assets/images/mj-01-cotton-stars.png'),
+    visual: assetPath('assets/screenshots/gpt-prompt.png'),
     showLyrics: true,
     accent: palette.candle,
   },
@@ -80,8 +80,8 @@ const SECTIONS: SectionDef[] = [
       'After the gibberish was created,',
       'ChatGPT and I searched for the meanings hidden inside it.',
     ],
-    bg: '/assets/images/mj-05-marionette-dancer.png',
-    visual: '/assets/screenshots/gpt-etymology.png',
+    bg: assetPath('assets/images/mj-05-marionette-dancer.png'),
+    visual: assetPath('assets/screenshots/gpt-etymology.png'),
     accent: '#c77b4a',
   },
   {
@@ -105,8 +105,8 @@ const SECTIONS: SectionDef[] = [
       'I explored style, voice, and production',
       'around the secret-language lyrics.',
     ],
-    bg: '/assets/images/mj-04-girl-doll.png',
-    visual: '/assets/screenshots/suno-upload.png',
+    bg: assetPath('assets/images/mj-04-girl-doll.png'),
+    visual: assetPath('assets/screenshots/suno-upload.png'),
     accent: palette.candle,
   },
 ];
@@ -442,12 +442,12 @@ const FLOW_CHAIN = [
 ];
 
 const ALL_IMAGES = [
-  '/assets/images/mj-01-cotton-stars.png',
-  '/assets/images/mj-02-galaxy.png',
-  '/assets/images/mj-03-girl-jar.png',
-  '/assets/images/mj-04-girl-doll.png',
-  '/assets/images/mj-05-marionette-dancer.png',
-  '/assets/images/mj-06-cosmic-face.png',
+  assetPath('assets/images/mj-01-cotton-stars.png'),
+  assetPath('assets/images/mj-02-galaxy.png'),
+  assetPath('assets/images/mj-03-girl-jar.png'),
+  assetPath('assets/images/mj-04-girl-doll.png'),
+  assetPath('assets/images/mj-05-marionette-dancer.png'),
+  assetPath('assets/images/mj-06-cosmic-face.png'),
 ];
 
 function TaglineSection({ s, isMobile }: { s: SectionDef; isMobile: boolean }) {
