@@ -18,6 +18,12 @@ const IMAGES = [
   assetPath('assets/images/mj-02-galaxy.png'),
 ];
 
+const MOBILE_IMAGES = [
+  assetPath('assets/images/mj-03-girl-jar.png'),
+  assetPath('assets/images/mj-05-marionette-dancer.png'),
+  assetPath('assets/images/mj-06-cosmic-face.png'),
+];
+
 const FLOW = [
   { from: 'Piano improvisation', arrow: '→', to: 'song', tool: 'Suno', color: palette.candle },
   { from: 'Gibberish language', arrow: '→', to: 'lyrics → symbols', tool: 'ChatGPT', color: palette.teal },
@@ -65,7 +71,7 @@ export function ChapterFullPicture({ onNavigate }: ChapterProps) {
           paddingRight: 'clamp(18px, 5vw, 72px)',
           paddingBottom: `calc(clamp(18px, 4vh, 36px) + env(safe-area-inset-bottom))`,
           paddingLeft: 'clamp(18px, 5vw, 72px)',
-          gap: 'clamp(14px, 2.4vh, 26px)',
+          gap: isMobile ? 'clamp(10px, 1.6vh, 16px)' : 'clamp(14px, 2.4vh, 26px)',
         }}
       >
         <motion.p
@@ -81,7 +87,7 @@ export function ChapterFullPicture({ onNavigate }: ChapterProps) {
             lineHeight: isMobile ? 1.5 : 1.58,
             textAlign: 'center',
             maxWidth: isMobile ? '30ch' : '44ch',
-            margin: 0,
+            margin: isMobile ? '0 0 4px' : 0,
             textShadow: '0 2px 16px rgba(0,0,0,0.82)',
           }}
         >
@@ -99,14 +105,14 @@ export function ChapterFullPicture({ onNavigate }: ChapterProps) {
             width: 'min(100%, 1180px)',
           }}
         >
-          {IMAGES.map((src, i) => (
+          {(isMobile ? MOBILE_IMAGES : IMAGES).map((src, i) => (
             <motion.div
               key={i}
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.22 + i * 0.07, duration: 0.45 }}
               style={{
-                aspectRatio: '3/4',
+                aspectRatio: isMobile ? '0.88 / 1' : '3/4',
                 borderRadius: 8,
                 overflow: 'hidden',
                 border: `1px solid ${palette.teal}35`,
@@ -129,7 +135,7 @@ export function ChapterFullPicture({ onNavigate }: ChapterProps) {
           transition={{ delay: 0.48, duration: 0.55 }}
           style={{
             fontFamily: fonts.mono,
-            fontSize: 'clamp(9px, 1.1vw, 12px)',
+            fontSize: isMobile ? 'clamp(8px, 1vw, 10px)' : 'clamp(9px, 1.1vw, 12px)',
             color: `${palette.cream}60`,
             letterSpacing: '0.25em',
             textTransform: 'uppercase',
@@ -142,7 +148,7 @@ export function ChapterFullPicture({ onNavigate }: ChapterProps) {
           style={{
             display: 'flex',
             flexDirection: 'column',
-            gap: 'clamp(8px, 1.4vh, 16px)',
+            gap: isMobile ? 'clamp(6px, 1vh, 10px)' : 'clamp(8px, 1.4vh, 16px)',
             alignItems: 'center',
             alignSelf: 'center',
             maxWidth: 820,
@@ -158,7 +164,7 @@ export function ChapterFullPicture({ onNavigate }: ChapterProps) {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                gap: 'clamp(6px, 1vw, 12px)',
+                gap: isMobile ? 'clamp(4px, 0.8vw, 8px)' : 'clamp(6px, 1vw, 12px)',
                 flexWrap: 'wrap',
               }}
             >
@@ -166,7 +172,7 @@ export function ChapterFullPicture({ onNavigate }: ChapterProps) {
                 style={{
                   fontFamily: fonts.body,
                   fontStyle: 'italic',
-                  fontSize: 'clamp(15px, 2.2vw, 22px)',
+                  fontSize: isMobile ? 'clamp(13px, 3.7vw, 16px)' : 'clamp(15px, 2.2vw, 22px)',
                   color: palette.cream,
                 }}
               >
@@ -175,7 +181,7 @@ export function ChapterFullPicture({ onNavigate }: ChapterProps) {
               <span
                 style={{
                   fontFamily: fonts.mono,
-                  fontSize: 'clamp(14px, 2vw, 20px)',
+                  fontSize: isMobile ? 'clamp(12px, 3vw, 15px)' : 'clamp(14px, 2vw, 20px)',
                   color: `${palette.cream}55`,
                 }}
               >
@@ -185,7 +191,7 @@ export function ChapterFullPicture({ onNavigate }: ChapterProps) {
                 style={{
                   fontFamily: fonts.body,
                   fontStyle: 'italic',
-                  fontSize: 'clamp(15px, 2.2vw, 22px)',
+                  fontSize: isMobile ? 'clamp(13px, 3.7vw, 16px)' : 'clamp(15px, 2.2vw, 22px)',
                   color: palette.cream,
                 }}
               >
@@ -194,7 +200,7 @@ export function ChapterFullPicture({ onNavigate }: ChapterProps) {
               <span
                 style={{
                   fontFamily: fonts.mono,
-                  fontSize: 'clamp(8px, 0.95vw, 10px)',
+                  fontSize: isMobile ? 'clamp(7px, 1.7vw, 8px)' : 'clamp(8px, 0.95vw, 10px)',
                   color: row.color,
                   letterSpacing: '0.12em',
                   textTransform: 'uppercase',
@@ -215,6 +221,7 @@ export function ChapterFullPicture({ onNavigate }: ChapterProps) {
           animate={{ opacity: 1 }}
           transition={{ delay: 1.15, duration: 0.6 }}
           style={{
+            display: isMobile ? 'none' : 'block',
             fontFamily: fonts.mono,
             fontSize: 'clamp(8px, 0.9vw, 10px)',
             color: `${palette.cream}35`,
