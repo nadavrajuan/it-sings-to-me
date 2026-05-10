@@ -93,7 +93,8 @@ export function Chapter01_Opening({ onNavigate }: ChapterProps) {
             width: '100%',
             height: '100%',
             objectFit: 'cover',
-            filter: 'saturate(0.7) brightness(0.72)',
+            opacity: 0.56,
+            filter: 'saturate(0.64) brightness(0.62)',
             transform: 'scale(1.06)',
           }}
         />
@@ -102,8 +103,8 @@ export function Chapter01_Opening({ onNavigate }: ChapterProps) {
       <div style={{
         position: 'absolute', inset: 0, zIndex: 1,
         background: `
-          radial-gradient(ellipse at 50% 42%, rgba(10, 22, 40, 0.12) 0%, rgba(10, 22, 40, 0.78) 76%),
-          linear-gradient(to bottom, ${palette.ink}D4 0%, rgba(10, 22, 40, 0.42) 28%, rgba(10, 22, 40, 0.82) 100%)
+          radial-gradient(ellipse at 50% 42%, rgba(10, 22, 40, 0.18) 0%, rgba(10, 22, 40, 0.82) 74%),
+          linear-gradient(to bottom, ${palette.ink}E1 0%, rgba(10, 22, 40, 0.56) 28%, rgba(10, 22, 40, 0.88) 100%)
         `,
       }} />
 

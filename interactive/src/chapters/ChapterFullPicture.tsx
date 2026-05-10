@@ -60,8 +60,11 @@ export function ChapterFullPicture({ onNavigate }: ChapterProps) {
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
-          justifyContent: 'center',
-          padding: `clamp(18px, 4vh, 42px) clamp(18px, 5vw, 72px) calc(clamp(18px, 4vh, 36px) + env(safe-area-inset-bottom))`,
+          justifyContent: isMobile ? 'flex-start' : 'center',
+          paddingTop: isMobile ? 'calc(54px + env(safe-area-inset-top))' : 'clamp(18px, 4vh, 42px)',
+          paddingRight: 'clamp(18px, 5vw, 72px)',
+          paddingBottom: `calc(clamp(18px, 4vh, 36px) + env(safe-area-inset-bottom))`,
+          paddingLeft: 'clamp(18px, 5vw, 72px)',
           gap: 'clamp(14px, 2.4vh, 26px)',
         }}
       >

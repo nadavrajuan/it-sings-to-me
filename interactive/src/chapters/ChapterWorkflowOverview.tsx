@@ -12,10 +12,10 @@ interface ChapterProps {
 // ─── Section data ───────────────────────────────────────────────────────────
 
 const MOTIFS = [
-  { src: assetPath('assets/images/mj-01-cotton-stars.png'), phrase: 'Looli looli baneh doo',    label: 'Cotton Stars' },
-  { src: assetPath('assets/images/mj-04-girl-doll.png'),    phrase: 'Marru deh, marru deh',     label: 'A doll became a memory' },
+  { src: assetPath('assets/images/mj-04-girl-doll.png'),    phrase: 'Looli looli baneh doo',    label: 'Cotton Stars' },
+  { src: assetPath('assets/images/mj-06-cosmic-face.png'),  phrase: 'Marru deh, marru deh',     label: 'A doll became a memory' },
   { src: assetPath('assets/images/mj-05-marionette-dancer.png'), phrase: 'Saffa ranji tilu too', label: 'Marionette Dancer' },
-  { src: assetPath('assets/images/mj-06-cosmic-face.png'),  phrase: 'Tondaluna, shree shree sha', label: 'Cosmic Face' },
+  { src: assetPath('assets/images/clip-cosmic-face.png'),   phrase: 'Tondaluna, shree shree sha', label: 'Cosmic Face' },
 ];
 
 const LYRICS_LINES = [
@@ -53,7 +53,7 @@ const SECTIONS: SectionDef[] = [
       'It began with a piano improvisation.',
       'A raw emotional sketch — before words.',
     ],
-    bg: assetPath('assets/images/mj-02-galaxy.png'),
+    bg: assetPath('assets/images/piano-play.png'),
     visual: null,
     frameImage: assetPath('assets/images/piano-play.png'),
     audioSrc: RAW_PIANO_AUDIO_PATH,
@@ -135,6 +135,7 @@ function AudioSketchPlayer({ src, accent }: { src: string; accent: string }) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const [hasError, setHasError] = useState(false);
+  const waveformBars = [16, 30, 18, 38, 22, 28, 20, 36, 18, 32, 24, 40, 19, 30, 17, 34, 22, 28];
 
   useEffect(() => {
     const audio = audioRef.current;
@@ -179,7 +180,7 @@ function AudioSketchPlayer({ src, accent }: { src: string; accent: string }) {
         marginTop: 'clamp(10px, 1.8vh, 18px)',
         display: 'flex',
         flexDirection: 'column',
-        gap: 10,
+        gap: 12,
       }}
     >
       <div
@@ -191,15 +192,16 @@ function AudioSketchPlayer({ src, accent }: { src: string; accent: string }) {
           textTransform: 'uppercase',
         }}
       >
-        raw piano sketch · 15 seconds
+        play original piano improv
       </div>
 
       <div
         style={{
           display: 'flex',
-          flexWrap: 'wrap',
           alignItems: 'center',
-          gap: 10,
+          gap: 14,
+          width: '100%',
+          maxWidth: 460,
         }}
       >
         <button
@@ -212,31 +214,82 @@ function AudioSketchPlayer({ src, accent }: { src: string; accent: string }) {
             color: palette.ink,
             background: accent,
             border: 'none',
-            borderRadius: 999,
-            padding: '10px 18px',
+            borderRadius: '999px',
+            width: 58,
+            height: 58,
+            minWidth: 58,
             cursor: 'pointer',
             letterSpacing: '0.08em',
             textTransform: 'uppercase',
+            display: 'grid',
+            placeItems: 'center',
+            boxShadow: '0 12px 26px rgba(0,0,0,0.3)',
           }}
+          aria-label={isPlaying ? 'Pause original piano improv' : 'Play original piano improv'}
         >
-          {isPlaying ? 'Pause piano' : 'Play piano'}
+          <span style={{ fontSize: 20, lineHeight: 1 }}>
+            {isPlaying ? '❚❚' : '▶'}
+          </span>
         </button>
 
-        <span
+        <div
+          style={{
+            flex: 1,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 5,
+            minHeight: 58,
+            padding: '0 16px',
+            borderRadius: 999,
+            background: 'rgba(255,255,255,0.04)',
+            border: `1px solid ${accent}30`,
+            overflow: 'hidden',
+          }}
+        >
+          {waveformBars.map((height, index) => (
+            <motion.div
+              key={index}
+              animate={{
+                scaleY: isPlaying
+                  ? [0.42, 1, 0.55, 0.88]
+                  : 0.5,
+                opacity: isPlaying ? [0.5, 1, 0.72, 0.92] : 0.55,
+              }}
+              transition={{
+                duration: 0.9,
+                repeat: isPlaying ? Infinity : 0,
+                delay: index * 0.03,
+                ease: 'easeInOut',
+              }}
+              style={{
+                width: 4,
+                height,
+                borderRadius: 999,
+                background: `linear-gradient(180deg, ${accent} 0%, ${palette.candle} 100%)`,
+                transformOrigin: 'center bottom',
+                boxShadow: `0 0 14px ${accent}22`,
+              }}
+            />
+          ))}
+        </div>
+      </div>
+
+      {hasError && (
+        <div
           style={{
             fontFamily: fonts.body,
             fontStyle: 'italic',
-            fontSize: 'clamp(13px, 1.6vw, 15px)',
-            color: `${palette.cream}B8`,
+            fontSize: 'clamp(12px, 1.4vw, 14px)',
+            color: `${palette.cream}B2`,
           }}
         >
-          {hasError ? 'Tap again to load the sketch.' : 'Original piano recording.'}
-        </span>
-      </div>
+          Tap once more if the audio was blocked before loading.
+        </div>
+      )}
 
       <audio
         ref={audioRef}
-        preload="metadata"
+        preload="auto"
         src={src}
         data-no-swipe="true"
         style={{ display: 'none' }}
@@ -719,7 +772,7 @@ export function ChapterWorkflowOverview({ onNavigate, currentIndex }: ChapterPro
           {section.bg ? (
             <img
               src={section.bg} alt=""
-              style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'saturate(0.42) brightness(0.3)' }}
+              style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'saturate(0.48) brightness(0.34)' }}
             />
           ) : (
             <div style={{ width: '100%', height: '100%', background: `radial-gradient(ellipse at 40% 35%, ${palette.cobalt}55 0%, ${palette.ink} 68%)` }} />
@@ -730,7 +783,7 @@ export function ChapterWorkflowOverview({ onNavigate, currentIndex }: ChapterPro
       {/* Dark overlay — ensures text always readable */}
       <div style={{
         position: 'absolute', inset: 0, zIndex: 1,
-        background: `linear-gradient(160deg, ${palette.ink}C8 0%, rgba(10, 22, 40, 0.58) 52%, ${palette.ink}B2 100%)`,
+        background: `linear-gradient(160deg, ${palette.ink}B6 0%, rgba(10, 22, 40, 0.5) 52%, ${palette.ink}A5 100%)`,
       }} />
 
       {/* Step progress pills */}
