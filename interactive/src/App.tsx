@@ -3,23 +3,20 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { DotIndicator } from './components/DotIndicator';
 import { useIsMobile } from './lib/useIsMobile';
 import { Chapter01_Opening }        from './chapters/Chapter01_Opening';
-import { Chapter06_Film }           from './chapters/Chapter06_Film';
 import { ChapterFullPicture }       from './chapters/ChapterFullPicture';
 import { ChapterWorkflowOverview }  from './chapters/ChapterWorkflowOverview';
 import { Chapter07_Closing }        from './chapters/Chapter07_Closing';
 
-// Narrative order: intro → clip → full picture → workflow steps → credits
+// Narrative order: intro + clip → full picture → workflow steps → credits
 const CHAPTERS = [
   Chapter01_Opening,
-  Chapter06_Film,
   ChapterFullPicture,
   ChapterWorkflowOverview,
   Chapter07_Closing,
 ];
 
 const CHAPTER_TITLES = [
-  'Opening',
-  'Watch the Clip',
+  'Opening & Clip',
   'The Full Picture',
   'The Workflow',
   'Credits & Contact',

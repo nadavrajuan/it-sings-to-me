@@ -71,11 +71,12 @@ export function ChapterFullPicture({ onNavigate }: ChapterProps) {
           style={{
             fontFamily: fonts.body,
             fontStyle: 'italic',
-            fontSize: 'clamp(15px, 2.2vw, 24px)',
+            fontWeight: isMobile ? 600 : 400,
+            fontSize: isMobile ? 'clamp(18px, 5vw, 24px)' : 'clamp(15px, 2.2vw, 24px)',
             color: palette.cream,
-            lineHeight: 1.58,
+            lineHeight: isMobile ? 1.5 : 1.58,
             textAlign: 'center',
-            maxWidth: '44ch',
+            maxWidth: isMobile ? '30ch' : '44ch',
             margin: 0,
             textShadow: '0 2px 16px rgba(0,0,0,0.82)',
           }}

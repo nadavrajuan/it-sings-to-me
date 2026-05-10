@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { palette, fonts } from '@looli/shared';
-import { VIMEO_BACKGROUND_URL, VIMEO_PLAYER_URL } from '../lib/media';
+import { CLIP_PREVIEW_VIDEO_PATH, VIMEO_PLAYER_URL } from '../lib/media';
 import { useIsMobile } from '../lib/useIsMobile';
 
 interface ChapterProps {
@@ -88,14 +88,23 @@ export function Chapter06_Film({ onNavigate }: ChapterProps) {
 
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden', background: palette.ink }}>
-      <div style={{ position: 'absolute', inset: '-10%', zIndex: 0, pointerEvents: 'none' }}>
-        <iframe
-          src={VIMEO_BACKGROUND_URL}
-          width="100%"
-          height="100%"
-          frameBorder="0"
-          allow="autoplay"
-          style={{ display: 'block', width: '100%', height: '100%' }}
+      <div style={{ position: 'absolute', inset: '-6%', zIndex: 0, overflow: 'hidden' }}>
+        <video
+          src={CLIP_PREVIEW_VIDEO_PATH}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          poster="/assets/images/mj-03-girl-jar.png"
+          style={{
+            display: 'block',
+            width: '100%',
+            height: '100%',
+            objectFit: 'cover',
+            filter: 'saturate(0.7) brightness(0.72)',
+            transform: 'scale(1.06)',
+          }}
         />
       </div>
 

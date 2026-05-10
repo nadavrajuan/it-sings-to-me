@@ -7,7 +7,7 @@ const base = process.env.VITE_BASE_PATH ?? '/';
 export default defineConfig({
   base,
   plugins: [react()],
-  publicDir: resolve(__dirname, '../public'),
+  publicDir: resolve(__dirname, 'public'),
   resolve: {
     alias: {
       '@looli/shared': resolve(__dirname, '../shared'),

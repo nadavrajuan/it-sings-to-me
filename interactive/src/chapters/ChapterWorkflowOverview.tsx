@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { palette, fonts } from '@looli/shared';
+import { RAW_PIANO_AUDIO_PATH } from '../lib/media';
 import { useIsMobile } from '../lib/useIsMobile';
 
 interface ChapterProps {
@@ -38,6 +39,7 @@ interface SectionDef {
   bg: string | null;
   visual: string | null;
   frameImage?: string;   // shown as a floating image card when visual is null
+  audioSrc?: string;
   showLyrics?: boolean;
   accent: string;
 }
@@ -54,6 +56,7 @@ const SECTIONS: SectionDef[] = [
     bg: '/assets/images/mj-02-galaxy.png',
     visual: null,
     frameImage: '/assets/images/piano-play.png',
+    audioSrc: RAW_PIANO_AUDIO_PATH,
     accent: palette.teal,
   },
   {
@@ -248,6 +251,42 @@ function StandardSection({ s, isMobile }: { s: SectionDef; isMobile: boolean }) 
               {line}
             </motion.p>
           ))}
+
+          {s.audioSrc && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.45, duration: 0.45 }}
+              style={{
+                marginTop: 'clamp(10px, 1.8vh, 18px)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 8,
+              }}
+            >
+              <div
+                style={{
+                  fontFamily: fonts.mono,
+                  fontSize: 'clamp(9px, 1vw, 11px)',
+                  color: `${s.accent}D9`,
+                  letterSpacing: '0.18em',
+                  textTransform: 'uppercase',
+                }}
+              >
+                raw piano sketch · 15 seconds
+              </div>
+              <audio
+                controls
+                preload="none"
+                src={s.audioSrc}
+                style={{
+                  width: '100%',
+                  maxWidth: 360,
+                  filter: 'drop-shadow(0 8px 18px rgba(0,0,0,0.28))',
+                }}
+              />
+            </motion.div>
+          )}
 
           {/* Printed lyrics for step 02 */}
           {s.showLyrics && (
