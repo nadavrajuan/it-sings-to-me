@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { palette, fonts } from '@looli/shared';
-import { VIMEO_BACKGROUND_URL, VIMEO_PLAYER_URL, VIMEO_SHARE_URL } from '../lib/media';
+import { VIMEO_BACKGROUND_URL, VIMEO_PLAYER_URL } from '../lib/media';
 import { useIsMobile } from '../lib/useIsMobile';
 
 interface ChapterProps {
@@ -167,24 +167,22 @@ export function Chapter06_Film({ onNavigate }: ChapterProps) {
                 lineHeight: 1.6,
               }}
             >
-              The background stays muted as atmosphere. Use the main button below for the full clip with sound, or preview it here inside the page.
+              The background stays muted as atmosphere. Tap below to open the full clip with sound right here in the page.
             </p>
           </div>
 
           <div
             style={{
               display: 'flex',
-              flexDirection: isMobile ? 'column' : 'row',
+              flexDirection: 'column',
               gap: 12,
               alignItems: 'center',
               justifyContent: 'center',
               width: '100%',
             }}
           >
-            <a
-              href={VIMEO_SHARE_URL}
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
+              onClick={() => setShowVimeo(true)}
               style={{
                 fontFamily: fonts.mono,
                 fontSize: 'clamp(12px, 1.45vw, 15px)',
@@ -196,33 +194,12 @@ export function Chapter06_Film({ onNavigate }: ChapterProps) {
                 cursor: 'pointer',
                 letterSpacing: '0.08em',
                 textTransform: 'uppercase',
-                textDecoration: 'none',
                 boxShadow: '0 12px 32px rgba(0,0,0,0.45)',
                 minWidth: isMobile ? '100%' : 0,
                 maxWidth: isMobile ? 340 : 'none',
               }}
             >
-              Watch full clip ↗
-            </a>
-
-            <button
-              onClick={() => setShowVimeo(true)}
-              style={{
-                fontFamily: fonts.mono,
-                fontSize: 'clamp(12px, 1.3vw, 14px)',
-                color: palette.cream,
-                background: 'rgba(10, 22, 40, 0.48)',
-                border: `1px solid ${palette.cream}45`,
-                borderRadius: 999,
-                padding: '14px 26px',
-                cursor: 'pointer',
-                letterSpacing: '0.08em',
-                textTransform: 'uppercase',
-                minWidth: isMobile ? '100%' : 0,
-                maxWidth: isMobile ? 340 : 'none',
-              }}
-            >
-              Preview inside page
+              Watch the full clip
             </button>
           </div>
 
