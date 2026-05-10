@@ -126,6 +126,125 @@ function GhostStep({ n, color }: { n: string; color: string }) {
   );
 }
 
+function isInteractiveTarget(target: EventTarget | null) {
+  return target instanceof HTMLElement
+    && Boolean(target.closest('button, a, audio, input, textarea, select, [data-no-swipe="true"]'));
+}
+
+function AudioSketchPlayer({ src, accent }: { src: string; accent: string }) {
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [hasError, setHasError] = useState(false);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const syncState = () => setIsPlaying(!audio.paused);
+    const onEnded = () => setIsPlaying(false);
+    const onError = () => setHasError(true);
+
+    audio.addEventListener('play', syncState);
+    audio.addEventListener('pause', syncState);
+    audio.addEventListener('ended', onEnded);
+    audio.addEventListener('error', onError);
+
+    return () => {
+      audio.removeEventListener('play', syncState);
+      audio.removeEventListener('pause', syncState);
+      audio.removeEventListener('ended', onEnded);
+      audio.removeEventListener('error', onError);
+    };
+  }, []);
+
+  const togglePlayback = async () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    setHasError(false);
+    try {
+      if (audio.paused) {
+        await audio.play();
+      } else {
+        audio.pause();
+      }
+    } catch (_error) {
+      setHasError(true);
+    }
+  };
+
+  return (
+    <div
+      data-no-swipe="true"
+      style={{
+        marginTop: 'clamp(10px, 1.8vh, 18px)',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 10,
+      }}
+    >
+      <div
+        style={{
+          fontFamily: fonts.mono,
+          fontSize: 'clamp(9px, 1vw, 11px)',
+          color: `${accent}D9`,
+          letterSpacing: '0.18em',
+          textTransform: 'uppercase',
+        }}
+      >
+        raw piano sketch · 15 seconds
+      </div>
+
+      <div
+        style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          alignItems: 'center',
+          gap: 10,
+        }}
+      >
+        <button
+          type="button"
+          data-no-swipe="true"
+          onClick={togglePlayback}
+          style={{
+            fontFamily: fonts.mono,
+            fontSize: 'clamp(11px, 1.2vw, 13px)',
+            color: palette.ink,
+            background: accent,
+            border: 'none',
+            borderRadius: 999,
+            padding: '10px 18px',
+            cursor: 'pointer',
+            letterSpacing: '0.08em',
+            textTransform: 'uppercase',
+          }}
+        >
+          {isPlaying ? 'Pause piano' : 'Play piano'}
+        </button>
+
+        <span
+          style={{
+            fontFamily: fonts.body,
+            fontStyle: 'italic',
+            fontSize: 'clamp(13px, 1.6vw, 15px)',
+            color: `${palette.cream}B8`,
+          }}
+        >
+          {hasError ? 'Tap again to load the sketch.' : 'Original piano recording.'}
+        </span>
+      </div>
+
+      <audio
+        ref={audioRef}
+        preload="metadata"
+        src={src}
+        data-no-swipe="true"
+        style={{ display: 'none' }}
+      />
+    </div>
+  );
+}
+
 function IntroSection({ s, isMobile }: { s: SectionDef; isMobile: boolean }) {
   return (
     <div style={{
@@ -257,34 +376,8 @@ function StandardSection({ s, isMobile }: { s: SectionDef; isMobile: boolean }) 
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.45, duration: 0.45 }}
-              style={{
-                marginTop: 'clamp(10px, 1.8vh, 18px)',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 8,
-              }}
             >
-              <div
-                style={{
-                  fontFamily: fonts.mono,
-                  fontSize: 'clamp(9px, 1vw, 11px)',
-                  color: `${s.accent}D9`,
-                  letterSpacing: '0.18em',
-                  textTransform: 'uppercase',
-                }}
-              >
-                raw piano sketch · 15 seconds
-              </div>
-              <audio
-                controls
-                preload="none"
-                src={s.audioSrc}
-                style={{
-                  width: '100%',
-                  maxWidth: 360,
-                  filter: 'drop-shadow(0 8px 18px rgba(0,0,0,0.28))',
-                }}
-              />
+              <AudioSketchPlayer src={s.audioSrc} accent={s.accent} />
             </motion.div>
           )}
 
@@ -579,9 +672,17 @@ export function ChapterWorkflowOverview({ onNavigate, currentIndex }: ChapterPro
   // Touch swipe
   useEffect(() => {
     let startY = 0;
-    const onStart = (e: TouchEvent) => { startY = e.touches[0].clientY; };
+    const onStart = (e: TouchEvent) => {
+      if (isInteractiveTarget(e.target)) return;
+      startY = e.touches[0].clientY;
+    };
     const onEnd = (e: TouchEvent) => {
+      if (isInteractiveTarget(e.target) || startY === 0) {
+        startY = 0;
+        return;
+      }
       const delta = startY - e.changedTouches[0].clientY;
+      startY = 0;
       if (Math.abs(delta) < 50) return;
       e.stopImmediatePropagation();
       if (delta > 0) {
@@ -618,7 +719,7 @@ export function ChapterWorkflowOverview({ onNavigate, currentIndex }: ChapterPro
           {section.bg ? (
             <img
               src={section.bg} alt=""
-              style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'saturate(0.3) brightness(0.18)' }}
+              style={{ width: '100%', height: '100%', objectFit: 'cover', filter: 'saturate(0.42) brightness(0.3)' }}
             />
           ) : (
             <div style={{ width: '100%', height: '100%', background: `radial-gradient(ellipse at 40% 35%, ${palette.cobalt}55 0%, ${palette.ink} 68%)` }} />
@@ -629,7 +730,7 @@ export function ChapterWorkflowOverview({ onNavigate, currentIndex }: ChapterPro
       {/* Dark overlay — ensures text always readable */}
       <div style={{
         position: 'absolute', inset: 0, zIndex: 1,
-        background: `linear-gradient(160deg, ${palette.ink}DE 0%, ${palette.ink}A8 55%, ${palette.ink}CC 100%)`,
+        background: `linear-gradient(160deg, ${palette.ink}C8 0%, rgba(10, 22, 40, 0.58) 52%, ${palette.ink}B2 100%)`,
       }} />
 
       {/* Step progress pills */}

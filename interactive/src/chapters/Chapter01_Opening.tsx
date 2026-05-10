@@ -126,7 +126,7 @@ export function Chapter01_Opening({ onNavigate }: ChapterProps) {
             textTransform: 'uppercase', color: palette.candle,
           }}
         >
-          watch the clip
+          a workflow video by Nadav Rajuan
         </motion.div>
 
         <motion.h1
@@ -137,14 +137,14 @@ export function Chapter01_Opening({ onNavigate }: ChapterProps) {
             fontFamily: fonts.body,
             fontStyle: 'italic',
             fontWeight: 400,
-            fontSize: isMobile ? 'clamp(40px, 13vw, 62px)' : 'clamp(44px, 8.5vw, 86px)',
+            fontSize: isMobile ? 'clamp(46px, 15vw, 72px)' : 'clamp(44px, 8.5vw, 86px)',
             color: palette.cream, lineHeight: 1.0, letterSpacing: '0.01em',
             textShadow: `0 4px 32px ${palette.ink}CC`,
-            maxWidth: '11ch',
+            maxWidth: '10ch',
             margin: 0,
           }}
         >
-          Watch the full clip with sound
+          It Sings To Me
         </motion.h1>
 
         <motion.p
@@ -152,24 +152,39 @@ export function Chapter01_Opening({ onNavigate }: ChapterProps) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8, duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
           style={{
-            fontFamily: fonts.body,
-            fontStyle: 'italic',
-            fontSize: isMobile ? 'clamp(16px, 4.8vw, 20px)' : 'clamp(16px, 2.2vw, 22px)',
-            color: `${palette.cream}E0`,
-            lineHeight: 1.55,
-            maxWidth: '34ch',
+            fontFamily: fonts.display,
+            fontSize: isMobile ? 'clamp(16px, 4.8vw, 20px)' : 'clamp(14px, 3vw, 22px)',
+            color: palette.candle,
+            textShadow: `0 2px 12px ${palette.ink}`,
             margin: 0,
-            textShadow: `0 2px 16px ${palette.ink}`,
           }}
         >
-          The page carries a muted visual fragment. Open the full clip here to hear the complete piece from inside the world itself.
+          a song in a language that doesn't exist
+        </motion.p>
+
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.0, duration: 0.85 }}
+          style={{
+            fontFamily: fonts.body,
+            fontStyle: 'italic',
+            fontSize: isMobile ? 'clamp(14px, 4vw, 17px)' : 'clamp(12px, 2vw, 17px)',
+            color: `${palette.cream}B8`,
+            lineHeight: 1.55,
+            maxWidth: '44ch',
+            margin: 0,
+          }}
+        >
+          From gibberish lyrics to music video, a workflow for discovering themes, symbols, and visual worlds with ChatGPT.
         </motion.p>
 
         <motion.button
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.05, duration: 0.75 }}
+          transition={{ delay: 1.15, duration: 0.75 }}
           onClick={() => setShowVimeo(true)}
+          data-no-swipe="true"
           style={{
             fontFamily: fonts.mono,
             fontSize: 'clamp(12px, 1.5vw, 15px)',
@@ -185,25 +200,46 @@ export function Chapter01_Opening({ onNavigate }: ChapterProps) {
             minWidth: isMobile ? 'min(100%, 320px)' : 0,
           }}
         >
-          Watch the full clip
+          Watch the full video
         </motion.button>
 
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.25, duration: 0.75 }}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.35, duration: 0.8 }}
           style={{
-            fontFamily: fonts.body,
-            fontStyle: 'italic',
-            fontSize: isMobile ? 'clamp(14px, 4vw, 17px)' : 'clamp(13px, 1.8vw, 17px)',
-            color: `${palette.cream}B2`,
-            lineHeight: 1.55,
-            maxWidth: '34ch',
-            margin: 0,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            gap: 6,
           }}
         >
-          Or keep scrolling to see how the clip came together.
-        </motion.p>
+          <motion.div
+            animate={{ y: [0, 8, 0] }}
+            transition={{ repeat: Infinity, duration: 1.8, ease: 'easeInOut' }}
+            style={{
+              fontFamily: fonts.mono,
+              fontSize: 18,
+              color: `${palette.candle}D0`,
+              lineHeight: 1,
+            }}
+          >
+            ↓
+          </motion.div>
+          <div
+            style={{
+              fontFamily: fonts.mono,
+              fontSize: isMobile ? 'clamp(11px, 3.2vw, 13px)' : 'clamp(10px, 1.1vw, 12px)',
+              fontWeight: 700,
+              letterSpacing: '0.14em',
+              textTransform: 'uppercase',
+              color: `${palette.cream}D2`,
+              textAlign: 'center',
+            }}
+          >
+            Scroll down for the workflow
+          </div>
+        </motion.div>
       </div>
 
       <AnimatePresence>

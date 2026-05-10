@@ -22,6 +22,11 @@ const CHAPTER_TITLES = [
   'Credits & Contact',
 ];
 
+function isInteractiveTarget(target: EventTarget | null) {
+  return target instanceof HTMLElement
+    && Boolean(target.closest('button, a, audio, input, textarea, select, iframe, [data-no-swipe="true"]'));
+}
+
 const slideVariants = {
   enter: (direction: number) => ({
     y: direction > 0 ? '100%' : '-100%',
@@ -71,9 +76,17 @@ export default function App() {
 
   // Touch swipe
   useEffect(() => {
-    const onTouchStart = (e: TouchEvent) => { touchStartY.current = e.touches[0].clientY; };
+    const onTouchStart = (e: TouchEvent) => {
+      if (isInteractiveTarget(e.target)) return;
+      touchStartY.current = e.touches[0].clientY;
+    };
     const onTouchEnd = (e: TouchEvent) => {
+      if (isInteractiveTarget(e.target) || touchStartY.current === 0) {
+        touchStartY.current = 0;
+        return;
+      }
       const delta = touchStartY.current - e.changedTouches[0].clientY;
+      touchStartY.current = 0;
       if (Math.abs(delta) > 50) navigate(current + (delta > 0 ? 1 : -1));
     };
     window.addEventListener('touchstart', onTouchStart, { passive: true });
