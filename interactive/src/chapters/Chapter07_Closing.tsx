@@ -9,6 +9,39 @@ interface ChapterProps {
 }
 
 export function Chapter07_Closing({ onNavigate }: ChapterProps) {
+  const [shareLabel, setShareLabel] = React.useState('Share this page');
+
+  const handleShare = React.useCallback(async () => {
+    const shareUrl = typeof window !== 'undefined'
+      ? window.location.href
+      : 'https://workflow.withnadav.com/sing-to-me/';
+
+    try {
+      if (navigator.share) {
+        await navigator.share({
+          title: 'It Sings To Me',
+          text: 'Explore the workflow behind It Sings To Me.',
+          url: shareUrl,
+        });
+        setShareLabel('Shared');
+        window.setTimeout(() => setShareLabel('Share this page'), 2200);
+        return;
+      }
+
+      await navigator.clipboard.writeText(shareUrl);
+      setShareLabel('Link copied');
+      window.setTimeout(() => setShareLabel('Share this page'), 2200);
+    } catch (error) {
+      // Ignore aborted share sheets and clipboard denials.
+      if (error instanceof DOMException && error.name === 'AbortError') {
+        return;
+      }
+
+      setShareLabel('Copy failed');
+      window.setTimeout(() => setShareLabel('Share this page'), 2200);
+    }
+  }, []);
+
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}>
 
@@ -140,30 +173,58 @@ export function Chapter07_Closing({ onNavigate }: ChapterProps) {
           }}
         />
 
-        <motion.a
-          href={VIMEO_SHARE_URL}
-          target="_blank"
-          rel="noopener noreferrer"
+        <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.6, duration: 0.6 }}
           style={{
-            fontFamily: fonts.mono,
-            fontSize: 'clamp(10px, 1.3vw, 13px)',
-            color: palette.ink,
-            background: palette.candle,
-            border: 'none',
-            borderRadius: 20,
-            padding: 'clamp(9px, 1.2vh, 12px) clamp(18px, 2.5vw, 28px)',
-            cursor: 'pointer',
-            letterSpacing: '0.08em',
-            textTransform: 'uppercase',
-            textDecoration: 'none',
-            display: 'inline-block',
+            display: 'flex',
+            flexWrap: 'wrap',
+            justifyContent: 'center',
+            gap: 12,
           }}
         >
-          Watch the full video ↗
-        </motion.a>
+          <a
+            href={VIMEO_SHARE_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              fontFamily: fonts.mono,
+              fontSize: 'clamp(10px, 1.3vw, 13px)',
+              color: palette.ink,
+              background: palette.candle,
+              border: 'none',
+              borderRadius: 20,
+              padding: 'clamp(9px, 1.2vh, 12px) clamp(18px, 2.5vw, 28px)',
+              cursor: 'pointer',
+              letterSpacing: '0.08em',
+              textTransform: 'uppercase',
+              textDecoration: 'none',
+              display: 'inline-block',
+            }}
+          >
+            Watch the full video ↗
+          </a>
+
+          <button
+            type="button"
+            onClick={handleShare}
+            style={{
+              fontFamily: fonts.mono,
+              fontSize: 'clamp(10px, 1.3vw, 13px)',
+              color: palette.cream,
+              background: 'transparent',
+              border: `1px solid ${palette.teal}66`,
+              borderRadius: 20,
+              padding: 'clamp(9px, 1.2vh, 12px) clamp(18px, 2.5vw, 28px)',
+              cursor: 'pointer',
+              letterSpacing: '0.08em',
+              textTransform: 'uppercase',
+            }}
+          >
+            {shareLabel}
+          </button>
+        </motion.div>
       </div>
     </div>
   );
