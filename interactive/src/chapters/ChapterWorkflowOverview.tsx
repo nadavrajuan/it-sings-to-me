@@ -699,7 +699,27 @@ export function ChapterWorkflowOverview({ onNavigate, currentIndex }: ChapterPro
   const [idx, setIdx] = useState(0);
   const [dir, setDir] = useState(1);
   const idxRef = useRef(idx);
+  const wheelIntentRef = useRef(0);
+  const wheelLockUntilRef = useRef(0);
   idxRef.current = idx;
+
+  const goNext = () => {
+    if (idxRef.current < SECTIONS.length - 1) {
+      setDir(1);
+      setIdx(i => i + 1);
+    } else {
+      onNavigate(currentIndex + 1);
+    }
+  };
+
+  const goPrev = () => {
+    if (idxRef.current > 0) {
+      setDir(-1);
+      setIdx(i => i - 1);
+    } else {
+      onNavigate(currentIndex - 1);
+    }
+  };
 
   // Keyboard: capture before App.tsx sees it
   useEffect(() => {
@@ -710,17 +730,43 @@ export function ChapterWorkflowOverview({ onNavigate, currentIndex }: ChapterPro
       const isPrev = e.key === 'ArrowUp'   || e.key === 'ArrowLeft';
       if (!isNext && !isPrev) return;
       e.stopImmediatePropagation();
-      if (isNext) {
-        if (idxRef.current < SECTIONS.length - 1) { setDir(1);  setIdx(i => i + 1); }
-        else onNavigate(currentIndex + 1);
-      } else {
-        if (idxRef.current > 0) { setDir(-1); setIdx(i => i - 1); }
-        else onNavigate(currentIndex - 1);
-      }
+      if (isNext) goNext();
+      else goPrev();
     };
     window.addEventListener('keydown', handler, true);
     return () => window.removeEventListener('keydown', handler, true);
   }, [currentIndex, onNavigate]);
+
+  // Desktop wheel navigation
+  useEffect(() => {
+    if (isMobile) return;
+
+    const onWheel = (e: WheelEvent) => {
+      if (isInteractiveTarget(e.target)) return;
+
+      const now = Date.now();
+      if (now < wheelLockUntilRef.current) {
+        e.preventDefault();
+        return;
+      }
+
+      wheelIntentRef.current += e.deltaY;
+      if (Math.abs(wheelIntentRef.current) < 45) return;
+
+      e.preventDefault();
+      e.stopImmediatePropagation();
+
+      const direction = wheelIntentRef.current > 0 ? 1 : -1;
+      wheelIntentRef.current = 0;
+      wheelLockUntilRef.current = now + 480;
+
+      if (direction > 0) goNext();
+      else goPrev();
+    };
+
+    window.addEventListener('wheel', onWheel, { capture: true, passive: false });
+    return () => window.removeEventListener('wheel', onWheel, true);
+  }, [currentIndex, isMobile, onNavigate]);
 
   // Touch swipe
   useEffect(() => {
@@ -738,13 +784,8 @@ export function ChapterWorkflowOverview({ onNavigate, currentIndex }: ChapterPro
       startY = 0;
       if (Math.abs(delta) < 50) return;
       e.stopImmediatePropagation();
-      if (delta > 0) {
-        if (idxRef.current < SECTIONS.length - 1) { setDir(1);  setIdx(i => i + 1); }
-        else onNavigate(currentIndex + 1);
-      } else {
-        if (idxRef.current > 0) { setDir(-1); setIdx(i => i - 1); }
-        else onNavigate(currentIndex - 1);
-      }
+      if (delta > 0) goNext();
+      else goPrev();
     };
     window.addEventListener('touchstart', onStart, { capture: true, passive: true });
     window.addEventListener('touchend',   onEnd,   { capture: true, passive: false });
