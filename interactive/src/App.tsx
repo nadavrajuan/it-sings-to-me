@@ -45,6 +45,8 @@ export default function App() {
   const [direction, setDirection] = useState(1);
   const isAnimating = useRef(false);
   const touchStartY = useRef(0);
+  const wheelIntent = useRef(0);
+  const wheelLockUntil = useRef(0);
 
   const navigate = useCallback(
     (next: number) => {
@@ -96,6 +98,35 @@ export default function App() {
       window.removeEventListener('touchend',   onTouchEnd);
     };
   }, [current, navigate]);
+
+  // Desktop wheel / trackpad navigation between top-level chapters.
+  // ChapterWorkflowOverview listens in capture phase and will steal the wheel
+  // when the user is inside its internal step flow.
+  useEffect(() => {
+    if (isMobile) return;
+
+    const onWheel = (e: WheelEvent) => {
+      if (isInteractiveTarget(e.target)) return;
+
+      const now = Date.now();
+      if (now < wheelLockUntil.current) {
+        e.preventDefault();
+        return;
+      }
+
+      wheelIntent.current += e.deltaY;
+      if (Math.abs(wheelIntent.current) < 40) return;
+
+      e.preventDefault();
+      const direction = wheelIntent.current > 0 ? 1 : -1;
+      wheelIntent.current = 0;
+      wheelLockUntil.current = now + 520;
+      navigate(current + direction);
+    };
+
+    window.addEventListener('wheel', onWheel, { passive: false });
+    return () => window.removeEventListener('wheel', onWheel);
+  }, [current, isMobile, navigate]);
 
   const ActiveChapter = CHAPTERS[current];
 
