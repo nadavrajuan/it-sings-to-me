@@ -700,7 +700,9 @@ export function ChapterWorkflowOverview({ onNavigate, currentIndex }: ChapterPro
   const [dir, setDir] = useState(1);
   const idxRef = useRef(idx);
   const wheelIntentRef = useRef(0);
-  const wheelLockUntilRef = useRef(0);
+  const wheelResetTimerRef = useRef<number | null>(null);
+  const wheelUnlockTimerRef = useRef<number | null>(null);
+  const wheelLockedRef = useRef(false);
   idxRef.current = idx;
 
   const goNext = () => {
@@ -744,28 +746,50 @@ export function ChapterWorkflowOverview({ onNavigate, currentIndex }: ChapterPro
     const onWheel = (e: WheelEvent) => {
       if (isInteractiveTarget(e.target)) return;
 
-      const now = Date.now();
-      if (now < wheelLockUntilRef.current) {
-        e.preventDefault();
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      e.stopPropagation();
+
+      if (wheelLockedRef.current) {
+        wheelIntentRef.current = 0;
+        if (wheelResetTimerRef.current) window.clearTimeout(wheelResetTimerRef.current);
+        wheelResetTimerRef.current = window.setTimeout(() => {
+          wheelIntentRef.current = 0;
+        }, 180);
         return;
       }
 
       wheelIntentRef.current += e.deltaY;
-      if (Math.abs(wheelIntentRef.current) < 45) return;
 
-      e.preventDefault();
-      e.stopImmediatePropagation();
+      if (wheelResetTimerRef.current) window.clearTimeout(wheelResetTimerRef.current);
+      wheelResetTimerRef.current = window.setTimeout(() => {
+        wheelIntentRef.current = 0;
+      }, 180);
+
+      if (Math.abs(wheelIntentRef.current) < 80) return;
 
       const direction = wheelIntentRef.current > 0 ? 1 : -1;
       wheelIntentRef.current = 0;
-      wheelLockUntilRef.current = now + 480;
+      wheelLockedRef.current = true;
+
+      if (wheelUnlockTimerRef.current) window.clearTimeout(wheelUnlockTimerRef.current);
+      wheelUnlockTimerRef.current = window.setTimeout(() => {
+        wheelLockedRef.current = false;
+        wheelIntentRef.current = 0;
+      }, 900);
 
       if (direction > 0) goNext();
       else goPrev();
     };
 
     window.addEventListener('wheel', onWheel, { capture: true, passive: false });
-    return () => window.removeEventListener('wheel', onWheel, true);
+    return () => {
+      window.removeEventListener('wheel', onWheel, true);
+      if (wheelResetTimerRef.current) window.clearTimeout(wheelResetTimerRef.current);
+      if (wheelUnlockTimerRef.current) window.clearTimeout(wheelUnlockTimerRef.current);
+      wheelIntentRef.current = 0;
+      wheelLockedRef.current = false;
+    };
   }, [currentIndex, isMobile, onNavigate]);
 
   // Touch swipe
@@ -798,7 +822,7 @@ export function ChapterWorkflowOverview({ onNavigate, currentIndex }: ChapterPro
   const section = SECTIONS[idx];
 
   return (
-    <div style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden', background: palette.ink }}>
+    <div data-wheel-scope="workflow" style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden', background: palette.ink }}>
 
       {/* Background image */}
       <AnimatePresence mode="sync">

@@ -46,7 +46,9 @@ export default function App() {
   const isAnimating = useRef(false);
   const touchStartY = useRef(0);
   const wheelIntent = useRef(0);
-  const wheelLockUntil = useRef(0);
+  const wheelResetTimer = useRef<number | null>(null);
+  const wheelUnlockTimer = useRef<number | null>(null);
+  const wheelLocked = useRef(false);
 
   const navigate = useCallback(
     (next: number) => {
@@ -107,25 +109,49 @@ export default function App() {
 
     const onWheel = (e: WheelEvent) => {
       if (isInteractiveTarget(e.target)) return;
+      if (e.target instanceof HTMLElement && e.target.closest('[data-wheel-scope="workflow"]')) return;
 
-      const now = Date.now();
-      if (now < wheelLockUntil.current) {
-        e.preventDefault();
+      e.preventDefault();
+
+      if (wheelLocked.current) {
+        wheelIntent.current = 0;
+        if (wheelResetTimer.current) window.clearTimeout(wheelResetTimer.current);
+        wheelResetTimer.current = window.setTimeout(() => {
+          wheelIntent.current = 0;
+        }, 180);
         return;
       }
 
       wheelIntent.current += e.deltaY;
-      if (Math.abs(wheelIntent.current) < 40) return;
 
-      e.preventDefault();
-      const direction = wheelIntent.current > 0 ? 1 : -1;
+      if (wheelResetTimer.current) window.clearTimeout(wheelResetTimer.current);
+      wheelResetTimer.current = window.setTimeout(() => {
+        wheelIntent.current = 0;
+      }, 180);
+
+      if (Math.abs(wheelIntent.current) < 80) return;
+
+      const nextDirection = wheelIntent.current > 0 ? 1 : -1;
       wheelIntent.current = 0;
-      wheelLockUntil.current = now + 520;
-      navigate(current + direction);
+      wheelLocked.current = true;
+
+      if (wheelUnlockTimer.current) window.clearTimeout(wheelUnlockTimer.current);
+      wheelUnlockTimer.current = window.setTimeout(() => {
+        wheelLocked.current = false;
+        wheelIntent.current = 0;
+      }, 900);
+
+      navigate(current + nextDirection);
     };
 
     window.addEventListener('wheel', onWheel, { passive: false });
-    return () => window.removeEventListener('wheel', onWheel);
+    return () => {
+      window.removeEventListener('wheel', onWheel);
+      if (wheelResetTimer.current) window.clearTimeout(wheelResetTimer.current);
+      if (wheelUnlockTimer.current) window.clearTimeout(wheelUnlockTimer.current);
+      wheelIntent.current = 0;
+      wheelLocked.current = false;
+    };
   }, [current, isMobile, navigate]);
 
   const ActiveChapter = CHAPTERS[current];
